@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explosif IA — Agents intelligents pour les institutions publiques de RDC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Mulish',system-ui,sans-serif;color:#1B2733;background:#fff;-webkit-font-smoothing:antialiased}
+  ::selection{background:#C9A84C;color:#0D1B2A}
+
+  @keyframes nodePulse{0%,100%{opacity:.35}50%{opacity:1}}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+  /* ── REVEAL ── */
+  [data-reveal]{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,.84,.44,1),transform .7s cubic-bezier(.16,.84,.44,1)}
+  [data-reveal].visible{opacity:1;transform:none}
+
+  /* ── NAV ── */
+  header{position:sticky;top:0;z-index:50;background:rgba(13,27,42,.86);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,.18)}
+  .nav-inner{max-width:1200px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+  .logo{display:flex;align-items:center;gap:11px;text-decoration:none}
+  .logo-icon{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#C9A84C,#E0C879);display:flex;align-items:center;justify-content:center;transform:rotate(45deg)}
+  .logo-icon span{width:11px;height:11px;background:#0D1B2A;border-radius:2px;transform:rotate(45deg);display:block}
+  .logo-text{font-family:'Poppins',sans-serif;font-weight:700;font-size:20px;color:#fff;letter-spacing:-.3px}
+  .logo-text em{color:#C9A84C;font-style:normal}
+  .desk-nav{display:flex;align-items:center;gap:30px}
+  .desk-nav a{color:#C5D0DC;text-decoration:none;font-size:15px;font-weight:600;transition:color .2s}
+  .desk-nav a:hover{color:#fff}
+  .nav-cta{background:#C9A84C;color:#0D1B2A;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;padding:11px 20px;border-radius:9px;text-decoration:none;white-space:nowrap;transition:background .2s}
+  .nav-cta:hover{background:#b8932f}
+
+  /* ── HERO ── */
+  .hero{position:relative;background:radial-gradient(120% 100% at 80% 0%,#13314f 0%,#0D1B2A 55%,#091420 100%);color:#fff;overflow:hidden}
+  .hero-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(201,168,76,.10) 1px,transparent 1px);background-size:26px 26px;opacity:.5;pointer-events:none}
+  .hero-inner{max-width:1200px;margin:0 auto;padding:84px 24px 96px;position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+  .hero-badge{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(27,153,139,.45);background:rgba(27,153,139,.12);color:#5FD0C2;font-weight:700;font-size:12.5px;letter-spacing:.4px;padding:7px 14px;border-radius:100px;text-transform:uppercase}
+  .hero-badge-dot{width:7px;height:7px;border-radius:50%;background:#1B998B;display:block}
+  .hero h1{font-family:'Poppins',sans-serif;font-weight:800;font-size:clamp(36px,4.5vw,54px);line-height:1.08;letter-spacing:-1.2px;margin:22px 0 0}
+  .hero h1 em{color:#C9A84C;font-style:normal}
+  .hero-sub{font-size:18.5px;line-height:1.65;color:#AFC0D0;margin:24px 0 0;max-width:520px}
+  .hero-sub strong{color:#fff}
+  .hero-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+  .btn-gold{background:#C9A84C;color:#0D1B2A;font-family:'Poppins',sans-serif;font-weight:600;font-size:16px;padding:16px 28px;border-radius:11px;text-decoration:none;display:inline-flex;align-items:center;gap:10px;box-shadow:0 14px 34px -12px rgba(201,168,76,.6);transition:background .2s,transform .2s}
+  .btn-gold:hover{background:#b8932f;transform:translateY(-2px)}
+  .btn-ghost{border:1px solid rgba(255,255,255,.28);color:#fff;font-family:'Poppins',sans-serif;font-weight:600;font-size:16px;padding:16px 26px;border-radius:11px;text-decoration:none;display:inline-flex;align-items:center;gap:10px;transition:border-color .2s,transform .2s}
+  .btn-ghost:hover{border-color:#fff;transform:translateY(-2px)}
+  .hero-trust{display:flex;flex-wrap:wrap;gap:10px;margin-top:38px;align-items:center}
+  .trust-item{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;color:#9FB2C4;font-weight:600}
+  .trust-sep{width:1px;height:16px;background:rgba(255,255,255,.15);align-self:center}
+
+  /* SVG visual */
+  .hero-visual{position:relative}
+  .hero-glow{position:absolute;inset:-12% -8% -6% -8%;background:radial-gradient(60% 60% at 60% 35%,rgba(27,153,139,.22),transparent 70%);filter:blur(8px);pointer-events:none}
+  .hero-chip{position:absolute;right:-6px;bottom:34px;background:#fff;border-radius:14px;padding:13px 16px;box-shadow:0 18px 40px -10px rgba(0,0,0,.5);display:flex;align-items:center;gap:11px;animation:floaty 5s ease-in-out infinite}
+  .chip-icon{width:38px;height:38px;border-radius:10px;background:rgba(27,153,139,.14);display:flex;align-items:center;justify-content:center;color:#1B998B;font-family:'Poppins',sans-serif;font-weight:700;font-size:13px}
+  .chip-title{font-family:'Poppins',sans-serif;font-weight:700;font-size:13px;color:#0D1B2A}
+  .chip-sub{font-size:12px;color:#5B6B7B}
+
+  /* ── SECTIONS ── */
+  .section-label{display:block;font-weight:700;font-size:13px;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px}
+  .section-label.green{color:#1B998B}
+  .section-label.gold{color:#C9A84C}
+  .section-h2{font-family:'Poppins',sans-serif;font-weight:700;font-size:clamp(28px,3.5vw,40px);line-height:1.12;letter-spacing:-.8px;color:#0D1B2A;margin:0}
+  .section-h2.white{color:#fff}
+  .section-sub{font-size:17.5px;line-height:1.6;color:#5B6B7B;margin:16px 0 0}
+  .section-sub.light{color:#AFC0D0}
+  .container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+  /* ── PROBLÈME ── */
+  .s-probleme{padding:104px 0;background:#F5F6F8}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .prob-card{background:#fff;border:1px solid #E7EBF0;border-radius:18px;padding:32px 28px;box-shadow:0 1px 2px rgba(13,27,42,.04)}
+  .card-icon{width:54px;height:54px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+  .icon-gold{background:rgba(201,168,76,.13)}
+  .icon-red{background:rgba(192,57,43,.10)}
+  .icon-green{background:rgba(27,153,139,.12)}
+  .prob-card h3{font-family:'Poppins',sans-serif;font-weight:600;font-size:20px;color:#0D1B2A;margin:0 0 10px}
+  .prob-card p{font-size:15.5px;line-height:1.6;color:#5B6B7B;margin:0}
+
+  /* ── APPROCHE ── */
+  .s-approche{padding:104px 0;background:#fff}
+  .steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:54px}
+  .step{position:relative;padding:0 26px 0 0}
+  .step:last-child{padding:0 0 0 26px}
+  .step-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .step-num{font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;color:#0D1B2A;background:#C9A84C;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .step-num.green-bg{background:#1B998B;color:#fff}
+  .step-line{flex:1;height:1px;background:linear-gradient(90deg,#E7EBF0,transparent)}
+  .step h3{font-family:'Poppins',sans-serif;font-weight:600;font-size:18.5px;color:#0D1B2A;margin:0 0 8px}
+  .step p{font-size:15px;line-height:1.58;color:#5B6B7B;margin:0}
+
+  /* ── SOLUTIONS ── */
+  .s-solutions{padding:104px 0;background:#0D1B2A;color:#fff;position:relative;overflow:hidden}
+  .s-solutions-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:24px 24px;pointer-events:none}
+  .sol-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:28px;transition:transform .25s ease,border-color .25s ease,background .25s ease;cursor:default}
+  .sol-card:hover{transform:translateY(-4px);border-color:rgba(201,168,76,.4);background:rgba(255,255,255,.07)}
+  .sol-card h3{font-family:'Poppins',sans-serif;font-weight:600;font-size:19px;margin:0 0 10px;color:#fff}
+  .sol-sector{font-size:12px;color:#7E93A6;font-weight:600;letter-spacing:.4px;margin-bottom:10px}
+  .sol-card p{font-size:14.5px;line-height:1.58;color:#AFC0D0;margin:0 0 18px}
+  .sol-link{color:#C9A84C;font-weight:700;font-size:14px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:gap .2s}
+  .sol-link:hover{gap:10px}
+
+  /* ── POURQUOI ── */
+  .s-pourquoi{padding:104px 0;background:#fff}
+  .why-layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:60px;align-items:start}
+  .why-sticky{position:sticky;top:100px}
+  .btn-dark{margin-top:26px;display:inline-flex;background:#0D1B2A;color:#fff;font-family:'Poppins',sans-serif;font-weight:600;font-size:15px;padding:14px 24px;border-radius:10px;text-decoration:none;transition:background .2s}
+  .btn-dark:hover{background:#1d3a5e}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .why-card{border:1px solid #E7EBF0;border-radius:18px;padding:28px;background:#FBFBF9}
+  .why-card h3{font-family:'Poppins',sans-serif;font-weight:600;font-size:18.5px;color:#0D1B2A;margin:0 0 9px}
+  .why-card p{font-size:14.5px;line-height:1.58;color:#5B6B7B;margin:0}
+
+  /* ── TÉMOIGNAGES ── */
+  .s-temoignages{padding:104px 0;background:#F5F6F8}
+  .testi-card{background:#fff;border:1px solid #E7EBF0;border-radius:18px;padding:30px}
+  .testi-card.dark{background:#0D1B2A;border-color:#0D1B2A}
+  .testi-stars{color:#C9A84C;font-size:13px;letter-spacing:2px;margin-bottom:14px}
+  .testi-text{font-size:16px;line-height:1.62;color:#28333E;margin:0 0 22px;font-weight:500}
+  .testi-card.dark .testi-text{color:#EAF0F6}
+  .testi-author{display:flex;align-items:center;gap:13px}
+  .author-avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:16px;flex-shrink:0}
+  .av-dark{background:linear-gradient(135deg,#0D1B2A,#1d4163);color:#C9A84C}
+  .av-gold{background:rgba(201,168,76,.2);color:#E0C879}
+  .av-green{background:linear-gradient(135deg,#1B998B,#13716a);color:#fff}
+  .author-name{font-family:'Poppins',sans-serif;font-weight:600;font-size:15px;color:#0D1B2A}
+  .testi-card.dark .author-name{color:#fff}
+  .author-role{font-size:13px;color:#5B6B7B}
+  .testi-card.dark .author-role{color:#9FB2C4}
+  .testi-disclaimer{text-align:center;font-size:13px;color:#90A0B0;margin:26px 0 0}
+
+  /* ── DÉMARRAGE ── */
+  .s-demarrage{padding:104px 0;background:#fff}
+  .start-step{text-align:center;padding:10px}
+  .start-num{width:64px;height:64px;border-radius:50%;border:2px solid #C9A84C;color:#0D1B2A;font-family:'Poppins',sans-serif;font-weight:700;font-size:22px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+  .start-num.green-border{border-color:#1B998B}
+  .start-step h3{font-family:'Poppins',sans-serif;font-weight:600;font-size:20px;color:#0D1B2A;margin:0 0 9px}
+  .start-step p{font-size:15.5px;line-height:1.6;color:#5B6B7B;margin:0}
+
+  /* ── CONTACT ── */
+  .s-contact{padding:96px 0;background:radial-gradient(110% 120% at 20% 0%,#13314f 0%,#0D1B2A 60%);color:#fff;position:relative;overflow:hidden}
+  .s-contact-dots{position:absolute;inset:0;background-image:radial-gradient(rgba(201,168,76,.08) 1px,transparent 1px);background-size:26px 26px;pointer-events:none}
+  .contact-grid{max-width:1080px;margin:0 auto;padding:0 24px;position:relative;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+  .contact-h2{font-family:'Poppins',sans-serif;font-weight:800;font-size:clamp(28px,4vw,42px);line-height:1.1;letter-spacing:-1px;margin:14px 0 0}
+  .contact-sub{font-size:17.5px;line-height:1.6;color:#AFC0D0;margin:18px 0 0;max-width:430px}
+  .contact-check{display:flex;align-items:center;gap:10px;margin-top:26px;color:#5FD0C2;font-weight:700;font-size:15px}
+  .contact-details{margin-top:34px;padding-top:28px;border-top:1px solid rgba(255,255,255,.12);display:grid;gap:14px}
+  .contact-detail{display:flex;align-items:center;gap:12px;font-size:15px;color:#C5D0DC;text-decoration:none}
+
+  /* form */
+  .form-card{background:#fff;border-radius:20px;padding:32px;box-shadow:0 30px 70px -25px rgba(0,0,0,.6)}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .form-row+.form-row,.form-row+label,.label-full+.form-row,.label-full+label{margin-top:14px}
+  .f-label{display:block}
+  .f-label span{display:block;font-size:13px;font-weight:700;color:#0D1B2A;margin-bottom:7px}
+  .f-input{width:100%;border:1px solid #DDE3EA;border-radius:10px;padding:12px 14px;font-size:15px;font-family:'Mulish',sans-serif;outline:none;transition:border-color .2s;color:#0D1B2A;background:#fff}
+  .f-input:focus{border-color:#C9A84C}
+  select.f-input{cursor:pointer}
+  textarea.f-input{resize:vertical;min-height:80px}
+  .btn-submit{width:100%;margin-top:20px;background:#C9A84C;color:#0D1B2A;font-family:'Poppins',sans-serif;font-weight:700;font-size:16px;padding:15px;border-radius:11px;border:none;cursor:pointer;transition:background .2s}
+  .btn-submit:hover{background:#b8932f}
+  .form-fine{text-align:center;font-size:12.5px;color:#90A0B0;margin:13px 0 0}
+
+  /* success state */
+  .form-success{display:none;text-align:center;padding:34px 12px}
+  .success-icon{width:66px;height:66px;border-radius:50%;background:rgba(27,153,139,.14);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+  .form-success h3{font-family:'Poppins',sans-serif;font-weight:700;font-size:23px;color:#0D1B2A;margin:0 0 10px}
+  .form-success p{font-size:15.5px;line-height:1.6;color:#5B6B7B;margin:0 auto;max-width:330px}
+  .btn-reset{margin-top:24px;background:transparent;border:1px solid #E7EBF0;color:#0D1B2A;font-family:'Poppins',sans-serif;font-weight:600;font-size:14px;padding:11px 20px;border-radius:9px;cursor:pointer;transition:border-color .2s}
+  .btn-reset:hover{border-color:#C9A84C}
+
+  /* ── FOOTER ── */
+  footer{background:#091420;color:#9FB2C4;padding:60px 0 30px}
+  .footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:24px}
+  .footer-brand p{font-size:14.5px;line-height:1.6;margin:0;max-width:280px}
+  .footer-col-title{font-family:'Poppins',sans-serif;font-weight:600;color:#fff;font-size:14px;margin-bottom:16px}
+  .footer-links{display:grid;gap:11px}
+  .footer-links a{color:#9FB2C4;text-decoration:none;font-size:14.5px;transition:color .2s}
+  .footer-links a:hover{color:#fff}
+  .footer-links span{font-size:14.5px}
+  .footer-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13.5px}
+
+  /* ── WHATSAPP ── */
+  .wa-float{position:fixed;right:22px;bottom:22px;z-index:60;width:58px;height:58px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px -6px rgba(37,211,102,.55);text-decoration:none;transition:transform .2s}
+  .wa-float:hover{transform:scale(1.1)}
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:1024px){
+    .hero-inner{grid-template-columns:1fr}
+    .hero-visual{display:none}
+    .steps-grid{grid-template-columns:1fr 1fr}
+    .step{padding:0 20px 32px !important}
+    .step-line{display:none}
+    .why-layout{grid-template-columns:1fr}
+    .why-sticky{position:static}
+    .footer-grid{grid-template-columns:1fr 1fr}
+  }
+  @media(max-width:768px){
+    .grid-3{grid-template-columns:1fr}
+    .grid-2{grid-template-columns:1fr}
+    .steps-grid{grid-template-columns:1fr}
+    .contact-grid{grid-template-columns:1fr}
+    .form-row{grid-template-columns:1fr}
+    .desk-nav{display:none}
+    .footer-grid{grid-template-columns:1fr}
+    .footer-bottom{flex-direction:column;text-align:center}
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="nav-inner">
+    <a href="#top" class="logo">
+      <div class="logo-icon"><span></span></div>
+      <span class="logo-text">Explosif<em>IA</em></span>
+    </a>
+    <nav class="desk-nav">
+      <a href="#probleme">Le problème</a>
+      <a href="#approche">Notre approche</a>
+      <a href="#solutions">Solutions</a>
+      <a href="#pourquoi">Pourquoi nous</a>
+    </nav>
+    <a href="#contact" class="nav-cta">Démonstration gratuite</a>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero" id="top">
+  <div class="hero-dots"></div>
+  <div class="hero-inner">
+
+    <div data-reveal>
+      <span class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Agents IA pour les institutions publiques · RDC
+      </span>
+      <h1>Automatisez les tâches répétitives.<br><em>Libérez vos équipes.</em><br>Servez mieux les citoyens.</h1>
+      <p class="hero-sub"><strong>Explosif IA</strong> conçoit des agents d'intelligence artificielle sur mesure pour les institutions publiques congolaises. Moins d'erreurs, des délais réduits, un service citoyen à la hauteur.</p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn-gold">Demander une démonstration gratuite →</a>
+        <a href="#solutions" class="btn-ghost">Voir nos solutions</a>
+      </div>
+      <div class="hero-trust">
+        <span class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B998B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v6c0 4 3 6.5 7 9 4-2.5 7-5 7-9V6l-7-3Z"/></svg>
+          Données hébergées en Afrique
+        </span>
+        <span class="trust-sep"></span>
+        <span class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B998B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/></svg>
+          Formation incluse
+        </span>
+        <span class="trust-sep"></span>
+        <span class="trust-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B998B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+          Réponse sous 24h
+        </span>
+      </div>
+    </div>
+
+    <div class="hero-visual" data-reveal>
+      <div class="hero-glow"></div>
+      <svg viewBox="0 0 520 460" width="100%" style="position:relative;display:block;filter:drop-shadow(0 24px 50px rgba(0,0,0,.45))">
+        <g stroke="#1B998B" stroke-width="1.4" opacity=".7" fill="none">
+          <path d="M90 120 L210 70 L360 110 L450 60" stroke-dasharray="3 6"/>
+          <path d="M120 200 L210 70 M360 110 L300 190 M450 60 L450 150" stroke-dasharray="3 6"/>
+        </g>
+        <g stroke="#C9A84C" stroke-width="1.2" opacity=".55" fill="none">
+          <path d="M90 120 L120 200 M210 70 L300 190 M120 200 L300 190" stroke-dasharray="2 7"/>
+        </g>
+        <circle cx="90" cy="120" r="5" fill="#1B998B" style="animation:nodePulse 3.2s ease-in-out infinite"/>
+        <circle cx="210" cy="70" r="6" fill="#C9A84C" style="animation:nodePulse 2.6s ease-in-out infinite .4s"/>
+        <circle cx="360" cy="110" r="5" fill="#1B998B" style="animation:nodePulse 3.6s ease-in-out infinite .8s"/>
+        <circle cx="450" cy="60" r="4.5" fill="#C9A84C" style="animation:nodePulse 2.9s ease-in-out infinite 1.1s"/>
+        <circle cx="120" cy="200" r="4.5" fill="#5FD0C2" style="animation:nodePulse 3.1s ease-in-out infinite .2s"/>
+        <circle cx="300" cy="190" r="5" fill="#5FD0C2" style="animation:nodePulse 2.7s ease-in-out infinite .9s"/>
+        <circle cx="450" cy="150" r="4" fill="#C9A84C" style="animation:nodePulse 3.4s ease-in-out infinite .5s"/>
+        <rect x="70" y="250" width="70" height="170" rx="4" fill="#16304a"/>
+        <rect x="70" y="250" width="70" height="6" fill="#C9A84C"/>
+        <rect x="150" y="210" width="58" height="210" rx="4" fill="#1b3a5a"/>
+        <rect x="150" y="210" width="58" height="6" fill="#1B998B"/>
+        <rect x="218" y="280" width="64" height="140" rx="4" fill="#14283e"/>
+        <rect x="218" y="280" width="64" height="6" fill="#1B998B"/>
+        <rect x="292" y="195" width="74" height="225" rx="4" fill="#1d4163"/>
+        <rect x="292" y="195" width="74" height="7" fill="#C9A84C"/>
+        <rect x="376" y="255" width="66" height="165" rx="4" fill="#16304a"/>
+        <rect x="376" y="255" width="66" height="6" fill="#1B998B"/>
+        <path d="M292 195 q37 -42 74 0 Z" fill="#1d4163"/>
+        <rect x="326" y="150" width="6" height="20" fill="#C9A84C"/>
+        <g fill="#C9A84C" opacity=".5">
+          <rect x="82" y="272" width="9" height="9"/><rect x="100" y="272" width="9" height="9"/><rect x="118" y="272" width="9" height="9"/>
+          <rect x="82" y="300" width="9" height="9"/><rect x="100" y="300" width="9" height="9"/><rect x="118" y="300" width="9" height="9"/>
+          <rect x="306" y="222" width="10" height="10"/><rect x="326" y="222" width="10" height="10"/><rect x="346" y="222" width="10" height="10"/>
+          <rect x="306" y="250" width="10" height="10"/><rect x="346" y="250" width="10" height="10"/>
+        </g>
+        <g fill="#5FD0C2" opacity=".5">
+          <rect x="162" y="232" width="9" height="9"/><rect x="180" y="232" width="9" height="9"/>
+          <rect x="162" y="260" width="9" height="9"/><rect x="180" y="260" width="9" height="9"/>
+          <rect x="390" y="278" width="9" height="9"/><rect x="410" y="278" width="9" height="9"/>
+        </g>
+        <line x1="40" y1="420" x2="480" y2="420" stroke="rgba(201,168,76,.3)" stroke-width="1.5"/>
+      </svg>
+      <div class="hero-chip">
+        <div class="chip-icon">IA</div>
+        <div>
+          <div class="chip-title">Agent actif</div>
+          <div class="chip-sub">312 dossiers traités aujourd'hui</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── PROBLÈME ── -->
+<section class="s-probleme" id="probleme" style="scroll-margin-top:80px">
+  <div class="container">
+    <div data-reveal style="max-width:700px">
+      <span class="section-label green">Le problème qu'on résout</span>
+      <h2 class="section-h2">Vos équipes méritent mieux que des tâches répétitives</h2>
+      <p class="section-sub">Chaque jour, vos meilleurs agents perdent un temps précieux sur des opérations manuelles. L'IA bien conçue les libère pour l'essentiel : le service au citoyen.</p>
+    </div>
+    <div class="grid-3" style="margin-top:48px">
+      <div class="prob-card" data-reveal>
+        <div class="card-icon icon-gold">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B8932F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="12" height="12" rx="2"/><rect x="8" y="8" width="12" height="12" rx="2"/></svg>
+        </div>
+        <h3>Des tâches répétitives</h3>
+        <p>La saisie, le tri et les relances mobilisent vos meilleurs agents sur des opérations sans valeur ajoutée.</p>
+      </div>
+      <div class="prob-card" data-reveal>
+        <div class="card-icon icon-red">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3Z"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="12" y1="17.3" x2="12" y2="17.4"/></svg>
+        </div>
+        <h3>Des erreurs humaines</h3>
+        <p>Les saisies et traitements manuels génèrent des erreurs coûteuses, difficiles à détecter et à corriger.</p>
+      </div>
+      <div class="prob-card" data-reveal>
+        <div class="card-icon icon-green">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1B998B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        </div>
+        <h3>Des délais qui s'allongent</h3>
+        <p>Les traitements lents ralentissent le service aux citoyens et nuisent à l'image de votre institution.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── APPROCHE ── -->
+<section class="s-approche" id="approche" style="scroll-margin-top:80px">
+  <div class="container">
+    <div data-reveal style="max-width:760px">
+      <span class="section-label green">Notre approche</span>
+      <h2 class="section-h2">Un agent IA conçu spécifiquement pour votre institution</h2>
+      <p class="section-sub"><strong style="color:#0D1B2A">Pas de solution générique.</strong> Chaque agent est pensé pour vos workflows, vos outils et votre réalité de terrain.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step" data-reveal>
+        <div class="step-head">
+          <span class="step-num">01</span>
+          <span class="step-line"></span>
+        </div>
+        <h3>Audit de vos processus</h3>
+        <p>On identifie précisément ce qui peut être automatisé dans votre institution.</p>
+      </div>
+      <div class="step" data-reveal style="padding:0 26px">
+        <div class="step-head">
+          <span class="step-num">02</span>
+          <span class="step-line"></span>
+        </div>
+        <h3>Conception sur mesure</h3>
+        <p>On bâtit l'agent autour de vos cas réels, vos documents et vos circuits de validation.</p>
+      </div>
+      <div class="step" data-reveal style="padding:0 26px">
+        <div class="step-head">
+          <span class="step-num">03</span>
+          <span class="step-line"></span>
+        </div>
+        <h3>Déploiement & formation</h3>
+        <p>On met l'agent en service et on forme vos équipes jusqu'à pleine autonomie.</p>
+      </div>
+      <div class="step" data-reveal>
+        <div class="step-head">
+          <span class="step-num green-bg">04</span>
+        </div>
+        <h3>Suivi & amélioration</h3>
+        <p>On mesure les résultats et on améliore l'agent en continu, mois après mois.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SOLUTIONS ── -->
+<section class="s-solutions" id="solutions" style="scroll-margin-top:80px">
+  <div class="s-solutions-dots"></div>
+  <div class="container" style="position:relative">
+    <div data-reveal style="max-width:720px">
+      <span class="section-label gold">Nos solutions par secteur</span>
+      <h2 class="section-h2 white">Une expertise pensée pour chaque institution</h2>
+      <p class="section-sub light">Six domaines, des agents concrets. Voici comment l'automatisation s'applique à votre secteur.</p>
+    </div>
+    <div class="grid-3" style="margin-top:50px">
+
+      <div class="sol-card" data-reveal>
+        <div class="card-icon icon-gold">
+          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#E0C879" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="13" y2="16"/></svg>
+        </div>
+        <h3>Administration fiscale</h3>
+        <div class="sol-sector">DGI · DGRAD</div>
+        <p>Traitement automatique des déclarations et détection d'anomalies. Relances fiscales envoyées sans intervention manuelle.</p>
+        <a href="#contact" class="sol-link">En savoir plus →</a>
+      </div>
+
+      <div class="sol-card" data-reveal>
+        <div class="card-icon icon-green">
+          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#5FD0C2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.3 12.3 11 15l4.7-5.2"/></svg>
+        </div>
+        <h3>Immatriculation & registres</h3>
+        <div class="sol-sector">SNIF · RCCM</div>
+        <p>Vérifications automatisées des dossiers et génération instantanée des documents officiels conformes.</p>
+        <a href="#contact" class="sol-link">En savoir plus →</a>
+      </div>
+
+      <div class="sol-card" data-reveal>
+        <div class="card-icon icon-gold">
+          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#E0C879" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="M3 8l9 5 9-5"/><line x1="12" y1="13" x2="12" y2="21"/></svg>
+        </div>
+        <h3>Douane & logistique</h3>
+        <div class="sol-sector">DGDA · Régies</div>
+        <p>Suivi des cargaisons en temps réel, alertes automatiques et rapports d'activité générés sans effort.</p>
+        <a href="#contact" class="sol-link">En savoir plus →</a>
+      </div>
+
+      <div class="sol-card" data-reveal>
+        <div class="card-icon icon-green">
+          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#5FD0C2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v12M6 12h12"/><circle cx="12" cy="12" r="9.2"/></svg>
+        </div>
+        <h3>Santé publique</h3>
+        <div class="sol-sector">Hôpitaux d'État</div>
+        <p>Gestion des dossiers patients, rappels de rendez-vous et rapports épidémiologiques automatisés.</p>
+        <a href="#contact" class="sol-link">En savoir plus →</a>
+      </div>
+
+      <div class="sol-card" data-reveal>
+        <div class="card-icon icon-gold">
+          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#E0C879" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h6v16H6a2 2 0 0 0-2 2V5Z"/><path d="M20 5a2 2 0 0 0-2-2h-6v16h6a2 2 0 0 1 2 2V5Z"/></svg>
+        </div>
+        <h3>Éducation</h3>
+        <div class="sol-sector">Universités · EPST</div>
+        <p>Traitement des inscriptions, gestion des notes et communication automatisée avec les étudiants.</p>
+        <a href="#contact" class="sol-link">En savoir plus →</a>
+      </div>
+
+      <div class="sol-card" data-reveal>
+        <div class="card-icon icon-green">
+          <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#5FD0C2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="21" x2="21" y2="21"/><path d="M4 21V9l8-5 8 5v12"/><line x1="9" y1="21" x2="9" y2="14"/><line x1="15" y1="21" x2="15" y2="14"/></svg>
+        </div>
+        <h3>Collectivités locales</h3>
+        <div class="sol-sector">Mairies · Communes</div>
+        <p>Traitement des demandes citoyennes et rédaction automatisée des courriers administratifs.</p>
+        <a href="#contact" class="sol-link">En savoir plus →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── POURQUOI NOUS ── -->
+<section class="s-pourquoi" id="pourquoi" style="scroll-margin-top:80px">
+  <div class="container">
+    <div class="why-layout">
+      <div class="why-sticky" data-reveal>
+        <span class="section-label green">Pourquoi nous choisir</span>
+        <h2 class="section-h2">Un partenaire qui connaît votre réalité</h2>
+        <p class="section-sub">Nous ne sommes pas un prestataire de plus. Nous comprenons le fonctionnement des institutions congolaises et nous restons à vos côtés.</p>
+        <a href="#contact" class="btn-dark">Parlons de votre institution →</a>
+      </div>
+      <div class="grid-2">
+        <div class="why-card" data-reveal>
+          <div class="card-icon icon-gold">
+            <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#B8932F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          </div>
+          <h3>Connaissance du terrain</h3>
+          <p>Nous savons comment fonctionnent vos institutions, leurs contraintes et leurs circuits de décision.</p>
+        </div>
+        <div class="why-card" data-reveal>
+          <div class="card-icon icon-green">
+            <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#1B998B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v6c0 4 3 6.5 7 9 4-2.5 7-5 7-9V6l-7-3Z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <h3>Souveraineté des données</h3>
+          <p>Vos données sont hébergées localement ou en Afrique. Vous gardez le contrôle, en conformité avec vos exigences.</p>
+        </div>
+        <div class="why-card" data-reveal>
+          <div class="card-icon icon-gold">
+            <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#B8932F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 5.5a3.2 3.2 0 0 1 0 6"/><path d="M17 14.8a5.5 5.5 0 0 1 4 5.2"/></svg>
+          </div>
+          <h3>Formation incluse</h3>
+          <p>Vos équipes maîtrisent l'outil de bout en bout. L'autonomie de votre institution est notre objectif.</p>
+        </div>
+        <div class="why-card" data-reveal>
+          <div class="card-icon icon-green">
+            <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="#1B998B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 13 13l-4.5 2.5L11 11l4.5-2.5Z"/></svg>
+          </div>
+          <h3>Accompagnement long terme</h3>
+          <p>On ne livre pas pour disparaître. Nous restons disponibles et faisons évoluer votre agent dans la durée.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── TÉMOIGNAGES ── -->
+<section class="s-temoignages">
+  <div class="container">
+    <div data-reveal style="text-align:center;max-width:640px;margin:0 auto">
+      <span class="section-label green">Ils nous font confiance</span>
+      <h2 class="section-h2">La parole aux décideurs publics</h2>
+    </div>
+    <div class="grid-3" style="margin-top:48px">
+      <div class="testi-card" data-reveal>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">« En trois mois, le temps de traitement des dossiers a été divisé par quatre. Nos agents se concentrent enfin sur les cas complexes. »</p>
+        <div class="testi-author">
+          <span class="author-avatar av-dark">MK</span>
+          <div>
+            <div class="author-name">M. Kalala</div>
+            <div class="author-role">Directeur informatique · Régie financière</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card dark" data-reveal>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">« Ce qui m'a convaincu, c'est l'écoute. Ils ont compris notre réalité avant de proposer quoi que ce soit. Un vrai partenaire. »</p>
+        <div class="testi-author">
+          <span class="author-avatar av-gold">AN</span>
+          <div>
+            <div class="author-name">A. Nkita</div>
+            <div class="author-role">Secrétaire général · Institution publique</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card" data-reveal>
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">« La formation de nos équipes a fait toute la différence. Aujourd'hui, l'outil tourne et nous sommes pleinement autonomes. »</p>
+        <div class="testi-author">
+          <span class="author-avatar av-green">LM</span>
+          <div>
+            <div class="author-name">L. Mwamba</div>
+            <div class="author-role">Responsable des opérations · Hôpital d'État</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="testi-disclaimer" data-reveal>Exemples de retours · vos premiers résultats prendront bientôt leur place ici.</p>
+  </div>
+</section>
+
+<!-- ── DÉMARRAGE ── -->
+<section class="s-demarrage">
+  <div class="container">
+    <div data-reveal style="text-align:center;max-width:680px;margin:0 auto 54px">
+      <span class="section-label green">Processus de démarrage</span>
+      <h2 class="section-h2">Prêt à moderniser votre institution ? Voici comment on démarre</h2>
+    </div>
+    <div class="grid-3">
+      <div class="start-step" data-reveal>
+        <div class="start-num">1</div>
+        <h3>Contactez-nous</h3>
+        <p>Un appel de 15 minutes pour comprendre votre besoin. Sans jargon, sans engagement.</p>
+      </div>
+      <div class="start-step" data-reveal>
+        <div class="start-num">2</div>
+        <h3>On analyse vos besoins</h3>
+        <p>Un audit offert de vos processus pour identifier ce qui peut être automatisé en priorité.</p>
+      </div>
+      <div class="start-step" data-reveal>
+        <div class="start-num green-border">3</div>
+        <h3>Une proposition chiffrée</h3>
+        <p>Une solution claire et chiffrée vous est remise sous 5 jours ouvrés. À vous de décider.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section class="s-contact" id="contact" style="scroll-margin-top:70px">
+  <div class="s-contact-dots"></div>
+  <div class="contact-grid">
+
+    <div data-reveal>
+      <span class="section-label gold">Audit gratuit</span>
+      <h2 class="contact-h2">Demandez votre audit gratuit</h2>
+      <p class="contact-sub">Décrivez-nous votre institution. On revient vers vous avec des pistes concrètes d'automatisation.</p>
+      <div class="contact-check">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5FD0C2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Aucun engagement · Réponse sous 24h
+      </div>
+      <div class="contact-details">
+        <a href="mailto:contact@explosif-ia.cd" class="contact-detail">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          contact@explosif-ia.cd
+        </a>
+        <span class="contact-detail">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          Kinshasa, République Démocratique du Congo
+        </span>
+      </div>
+    </div>
+
+    <div data-reveal>
+      <div class="form-card">
+
+        <!-- Succès -->
+        <div class="form-success" id="form-success">
+          <div class="success-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1B998B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <h3>Demande bien reçue</h3>
+          <p>Merci. Notre équipe vous recontacte sous 24h pour planifier votre audit gratuit. À très vite.</p>
+          <button class="btn-reset" onclick="resetForm()">Envoyer une autre demande</button>
+        </div>
+
+        <!-- Formulaire -->
+        <form id="contact-form" onsubmit="submitForm(event)">
+          <div class="form-row">
+            <label class="f-label"><span>Nom complet</span><input class="f-input" type="text" placeholder="Votre nom" required></label>
+            <label class="f-label"><span>Institution</span><input class="f-input" type="text" placeholder="Votre institution" required></label>
+          </div>
+          <div class="form-row">
+            <label class="f-label"><span>Poste</span><input class="f-input" type="text" placeholder="Votre fonction" required></label>
+            <label class="f-label"><span>Secteur</span>
+              <select class="f-input" required>
+                <option value="">Choisir…</option>
+                <option>Administration fiscale</option>
+                <option>Immatriculation & registres</option>
+                <option>Douane & logistique</option>
+                <option>Santé publique</option>
+                <option>Éducation</option>
+                <option>Collectivités locales</option>
+                <option>Autre</option>
+              </select>
+            </label>
+          </div>
+          <div class="form-row" style="margin-top:14px">
+            <label class="f-label"><span>Email professionnel</span><input class="f-input" type="email" placeholder="vous@institution.cd" required></label>
+            <label class="f-label"><span>Numéro WhatsApp</span><input class="f-input" type="tel" placeholder="+243 …" required></label>
+          </div>
+          <label class="f-label" style="display:block;margin-top:14px">
+            <span>Votre besoin en quelques mots</span>
+            <textarea class="f-input" rows="3" placeholder="Décrivez brièvement ce que vous aimeriez automatiser…"></textarea>
+          </label>
+          <button type="submit" class="btn-submit">Demander mon audit gratuit</button>
+          <p class="form-fine">Vos informations restent confidentielles. Aucune sollicitation commerciale abusive.</p>
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#top" class="logo" style="margin-bottom:16px;display:inline-flex">
+          <div class="logo-icon" style="width:32px;height:32px;border-radius:8px"><span style="width:10px;height:10px"></span></div>
+          <span class="logo-text" style="font-size:19px">Explosif<em>IA</em></span>
+        </a>
+        <p>Des agents d'intelligence artificielle sur mesure pour les institutions publiques de la République Démocratique du Congo.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Navigation</div>
+        <div class="footer-links">
+          <a href="#probleme">Le problème</a>
+          <a href="#approche">Notre approche</a>
+          <a href="#solutions">Solutions</a>
+          <a href="#pourquoi">Pourquoi nous</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Contact</div>
+        <div class="footer-links">
+          <a href="mailto:contact@explosif-ia.cd">contact@explosif-ia.cd</a>
+          <a href="https://wa.me/243000000000">WhatsApp Business</a>
+          <span>Kinshasa, RDC</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Légal</div>
+        <div class="footer-links">
+          <a href="#contact">Mentions légales</a>
+          <a href="#contact">Confidentialité</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Explosif IA. Tous droits réservés.</span>
+      <span>L'intelligence artificielle au service de l'État congolais.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ── WHATSAPP ── -->
+<a href="https://wa.me/243000000000" target="_blank" rel="noopener" aria-label="WhatsApp" class="wa-float">
+  <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2Zm0 18.13c-1.52 0-3.01-.41-4.3-1.18l-.31-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.35c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.69 8.41-8.31 8.41Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28Z"/></svg>
+</a>
+
+<script>
+  // Scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -6% 0px' });
+
+  document.querySelectorAll('[data-reveal]').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.92) {
+      el.style.transition = 'none';
+      el.classList.add('visible');
+    } else {
+      io.observe(el);
+    }
+  });
+
+  // Fallback : ne jamais laisser du contenu caché
+  setTimeout(() => {
+    document.querySelectorAll('[data-reveal]').forEach(el => {
+      if (!el.classList.contains('visible')) {
+        el.style.transition = 'none';
+        el.classList.add('visible');
+      }
+    });
+  }, 1600);
+
+  // Formulaire
+  function submitForm(e) {
+    e.preventDefault();
+    document.getElementById('contact-form').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  }
+
+  function resetForm() {
+    document.getElementById('contact-form').reset();
+    document.getElementById('contact-form').style.display = 'block';
+    document.getElementById('form-success').style.display = 'none';
+  }
+</script>
+</body>
+</html>
